@@ -1,0 +1,178 @@
+<?php
+
+use yii\helpers\Html;
+use app\components\HodoActiveForm;
+use app\modules\adsplatform\models\Datadict;
+use app\modules\adsplatform\models\Position;
+/* @var $this yii\web\View */
+/* @var $model app\modules\adsplatform\models\Ad */
+/* @var $form app\components\HodoActiveForm */
+?>
+
+<div class="game-form">
+
+    <?php $form = HodoActiveForm::begin([
+    ]); ?>
+
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'title') ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'subtitle') ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?=
+            $form->select2($model, 'position_id',[
+                'language' => Yii::$app->language,
+                'data' => Position::getList() ,
+                'options' => [],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'multiple' => false
+                ],
+            ]);
+            ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->radioList($model, 'type', [], Datadict::getDataList('ad_type'))?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->radioList($model, 'target', [], Datadict::getDataList('ad_target'), ['id' => 'ad_targets'])?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'image') ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'image_vertical') ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'link') ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'detail') ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'package_name') ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'version_code') ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->radioList($model, 'collect_data', [], Datadict::getDataList('ad_collect_data')) ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'show_time') ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'start_time', ['labelOptions' => ['class' => 'control-label col-md-3', 'placeholder'=>'2016-04-18 00:00:00']]) ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'end_time',  ['labelOptions' => ['class' => 'control-label col-md-3', 'placeholder'=>'2016-04-18 00:00:00']]) ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'ceiling_view') ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'ceiling_day_click') ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'ceiling_total_view') ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'ceiling_total_click') ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->radioList($model, 'status', [], Datadict::getDataList('ad_status')) ?>
+        </div>
+    </div>
+
+    <?php /* $form->fileInput($model, 'image',[], [
+        'options' => [
+            'accept' => 'image/*',
+            'multiple' => false
+        ],
+        'pluginOptions' => [
+            'uploadUrl' => Url::to(['upload-file/index']),
+            'uploadAsync' => true,
+            'minFileCount' => 1,
+            'maxFileCount' => 1,
+            'overwriteInitial' => false,
+            'uploadExtraData' => [
+                'm' => 'Game',
+                'name' => 'icon'
+            ],
+            'showUpload' => true,
+            'browseLabel' => '',
+           // 'initialPreview' => [],//$model->Select2Init('icon')['initialPreview'],
+            //'initialPreviewConfig'=> //$model->Select2Init('icon')['initialPreviewConfig'],
+        ],
+    ]) */ ?>
+    <?php /* $form->fileInput($model, 'image_vertical',[], [
+        'options' => [
+            'accept' => 'image/*',
+            'multiple' => false
+        ],
+        'pluginOptions' => [
+            'uploadUrl' => Url::to(['upload-file/index']),
+            'uploadAsync' => true,
+            'minFileCount' => 1,
+            'maxFileCount' => 1,
+            'overwriteInitial' => false,
+            'uploadExtraData' => [
+                'm' => 'Game',
+                'name' => 'icon'
+            ],
+            'showUpload' => true,
+            'browseLabel' => '',
+           // 'initialPreview' => [],//$model->Select2Init('icon')['initialPreview'],
+            //'initialPreviewConfig'=> //$model->Select2Init('icon')['initialPreviewConfig'],
+        ],
+    ])*/ ?>
+
+    <div class="form-group">
+        <?= Html::submitButton($model->isNewRecord ? '创建' : '更新', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+    </div>
+
+    <?php HodoActiveForm::end(); ?>
+
+</div>
+

@@ -1,0 +1,35 @@
+<?php
+
+use yii\helpers\Html;
+use app\components\HodoActiveForm;
+use app\modules\adsplatform\models\Datadict;
+/* @var $this yii\web\View */
+/* @var $model app\modules\adsplatform\models\Position */
+/* @var $form app\components\HodoActiveForm */
+?>
+
+<div class="position-form">
+
+    <?php $form = HodoActiveForm::begin(); ?>
+
+    <?= $form->textInput($model, 'name', ['maxlength' => true]) ?>
+
+    <?= $form->dropDownList($model,'platform',[], Datadict::getDataList('position_platform'))?>
+
+    <?= $form->dropDownList($model,'type',[], Datadict::getDataList('position_type'))?>
+
+    <?= $form->field($model, 'total')->textInput() ?>
+
+    <?= $form->field($model, 'width')->textInput() ?>
+
+    <?= $form->field($model, 'height')->textInput() ?>
+
+    <?= $form->dropDownList($model,'status',[], Datadict::getDataList('position_status'))?>
+
+    <div class="form-group">
+        <?= Html::submitButton($model->isNewRecord ? '创建' : '更新', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+    </div>
+
+    <?php HodoActiveForm::end(); ?>
+
+</div>

@@ -1,0 +1,83 @@
+<?php
+
+use yii\helpers\Html;
+use yii\widgets\DetailView;
+use app\modules\adsplatform\models\Datadict;
+use app\modules\adsplatform\models\Strategy;
+use app\extensions\grid\HodoGridView;
+use yii\widgets\Pjax;
+use app\modules\adsplatform\models\Ad;
+use yii\helpers\Url;
+
+/* @var $this yii\web\View */
+/* @var $model app\modules\adsplatform\models\Strategy */
+
+$this->title = $model->id;
+$this->params['breadcrumbs'][] = ['label' => 'Strategies', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
+?>
+<div class="strategy-view">
+
+
+    <?= '<h1 class="text-center">' . $strategy_name . '</h1>' ?>
+
+    <!-- 策咯规则 -->
+    <h3>策略规则</h3>
+
+    <?=
+    HodoGridView::widget([
+        'dataProvider' => $dataProvider,
+        'columns' => [
+            [
+                'attribute' => 'type',
+                'value' => function($data) {
+                    return Datadict::getDataValue('strategy_list_type', $data->type);
+                },
+            ],
+            [
+                'attribute' => 'rule',
+                'value' => function($data) {
+                    return Datadict::getDataValue('strategy_list_rule', $data->rule);
+                },
+            ],
+            'rule_content',
+            // 'create_time:datetime',
+            // 'update_time:datetime',
+            // 'status',
+            [
+                'attribute' => 'status',
+                'value' => function($data) {
+                    return Datadict::getDataValue('strategy_list_status', $data->status);
+                },
+            ],
+        ],
+    ]);
+    ?>
+    <h3>策略广告</h3>
+
+    <?=
+    HodoGridView::widget([
+        'dataProvider' => $dataProvider_adlist,
+        'columns' => [
+
+            [
+                'attribute' => 'ad_id',
+                'format' => 'html',
+                'value' => function($data) {
+                    $result = Ad::findOne($data->ad_id);
+                    return Html::a('#' . ($data->ad_id) . "-" . $result['title'], Url::to(['ad/index', 'AdSearch[id]' => $data->ad_id], ['data-pjax' => '0',]));
+                }
+                    ],
+                    'weight',
+                    // 'update_time:datetime',
+                    [
+                        'attribute' => 'status',
+                        'value' => function($data) {
+                            return Datadict::getDataValue('strategy_list_status', $data->status);
+                        },
+                    ],
+                ],
+            ]);
+            ?>
+
+</div>
