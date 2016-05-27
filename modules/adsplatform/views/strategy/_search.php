@@ -13,22 +13,20 @@ use app\modules\adsplatform\models\Position;
     'id' => 'hodo-search-form',
     'linkSelector' => false,
 ])?>
-<div class="strategy-search">
+<div class="strategy-search" >
 
     <?php $form = HodoActiveForm::begin([
         'action' => ['index'],
         'method' => 'get',
         'options' => [
-            'data-pjax' => true
+            'data-pjax' => true,
+            'class' => 'form-horizontal'
         ]
     ]); ?>
 
     <div class="row">
         <div class="col-lg-4">
-            <?= $form->textInput($model, 'name') ?>
-        </div>
-        <div class="col-lg-4">
-            <?= $form->dropDownList($model, 'status', [], ['' => '全部'] + Datadict::getDataList('strategy_list_status')) ?>
+            <?= $form->textInput($model, 'name', ['labelOptions' => ['class' => 'control-label col-md-3']]  ) ?>
         </div>
         <div class="col-lg-4">
             <?=
@@ -43,22 +41,21 @@ use app\modules\adsplatform\models\Position;
             ]);
             ?>
         </div>
+        <div class="col-lg-4">
+            <?= $form->dropDownList($model, 'status', [], ['' => '全部']+Datadict::getDataList('strategy_list_status'))?>
+        </div>
+
     </div>
 
-    <div class="row">
-        <div class="col-lg-4">
-
+    <div class="form-group text-right">
+        <div class="col-lg-12">
+            <?= Html::a('策略验证',['/adsplatform/strategy-verify/index'], ['class' => 'btn btn-success ']) ?>
+            <?php if(Yii::$app->user->can('/adsplatform/strategy/create')){?>
+            <?= Html::a('新增流量策略',['/adsplatform/strategy/create'], ['class' => 'btn btn-success ']) ?>
+            <?php }?>
+            <?= Html::submitButton('筛选', ['class' => 'btn btn-primary' ]) ?>
         </div>
     </div>
-
-    <?php // echo $form->field($model, 'status') ?>
-
-    <div class="form-group">
-        <?= Html::submitButton('筛选', ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('新增流量策略',['/adsplatform/strategy/create'], ['class' => 'btn btn-success']) ?>
-
-    </div>
-
     <?php HodoActiveForm::end(); ?>
 
 </div>

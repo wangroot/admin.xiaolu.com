@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = ['label'=>$this->title,'iconClass' => 'fa fa-ta
         <?= HodoGridView::widget([
             'dataProvider' => $dataProvider,
             'columns' => [
-//                'id',
+                'id',
                 'name',
                 [
                     'attribute' => 'position_id',
@@ -75,39 +75,24 @@ $this->params['breadcrumbs'][] = ['label'=>$this->title,'iconClass' => 'fa fa-ta
 //                ],
 
                 [
+                    'format' => 'html',
                     'attribute' => 'status',
                     'value' => function($data){
-                        return Datadict::getDataValue('strategy_list_status', $data->status);
+                        
+                        $style = ['style'=>'color:#738186'];
+                        if($data->status)
+                            $style = ['style'=>'color:#22bf6c'];
+                        return Html::tag('div',Datadict::getDataValue('strategy_list_status', $data->status),$style);
                     },
                 ],
 
                 [
                     'attribute' => 'create_time',
-                    'format' => ['date','php:Y-m-d H:i:s']
+                    'format' => ['date','php:Y-m-d H:i']
                 ],
-
-//                [
-//                    'class' => 'app\extensions\grid\HodoActionColumn',
-//                    'template' => '{strategyListView} {strategyAdListView} {strategyList} {strategyAdList} ',
-//                    'buttons' => [
-//                        'strategyListView' => function($url,$model){
-//                            return Html::a(Html::tag('span','策略规则', ['class'=>'glyphicon glyphicon-sunglasses', 'title'=>'策略规则查看']).Html::endTag('span'), Url::to(['strategy-list/index','strategy_id' => $model->id]),['data-pjax' => '0',]);
-//                        },
-//                        'strategyAdListView' => function($url, $model){
-//                            return Html::a(Html::tag('span','策略广告', ['class'=>'glyphicon glyphicon-leaf', 'title'=>'广告绑定查看']).Html::endTag('span'),  Url::to(['strategy-ad-list/index','strategy_id' => $model->id]),['data-pjax' => '0',]);
-//                        },
-//                        'strategyList' => function($url,$model){
-//                            return Html::a(Html::tag('span','广告类型增加', ['class'=>'glyphicon glyphicon-send', 'title'=>'策略规则']).Html::endTag('span'), Url::to(['strategy-list/create','strategy_id' => $model->id]),['data-pjax' => '0',]);
-//                        },
-//                        'strategyAdList' => function($url, $model){
-//                            return Html::a(Html::tag('span','广告内容增加', ['class'=>'glyphicon glyphicon-font', 'title'=>'广告绑定']).Html::endTag('span'),  Url::to(['strategy-ad-list/create','strategy_id' => $model->id]),['data-pjax' => '0',]);
-//                        }
-//                    ]
-//                ],
                 [
                     'header' => '操作',
                     'class' => 'app\extensions\grid\HodoActionColumn',
-                    'template' => '{view} {delete} {update} {switch-status}',
                 ],
             ],
         ]); ?>

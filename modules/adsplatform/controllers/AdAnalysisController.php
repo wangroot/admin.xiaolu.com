@@ -24,12 +24,12 @@ class AdAnalysisController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index' ],
+                        'actions' => ['index' ,'send-mail'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['/adsplatform/ad-analysis/index'],
                     ],
                     [
-                        'actions' => ['data', 'send-mail'],
+                        'actions' => ['data'],
                         'allow' => true,
                         'roles' => ['?', '@'],
                     ],
@@ -88,7 +88,6 @@ class AdAnalysisController extends Controller
      */
     public function actionData(){
         $this->authKey();
-
         $queryDate = date('Ymd', strtotime('-1 day'));
         // 分表临界点，之前的不做处理
         if($queryDate <= 20160428){
@@ -101,10 +100,17 @@ class AdAnalysisController extends Controller
         $table = 'effect_'.date('Ymd', strtotime('-1 day'));
         $db2 = Yii::$app->db2;
         $db = \Yii::$app->db;
+for($i=0; $i<=7; $i++){
+    $createTable = 'effect_'.date('Ymd', strtotime($i.' day'));
+    $createSql =<<<EOD
+CREATE TABLE IF NOT EXISTS {$createTable} LIKE effect;
+EOD;
+    $db2->createCommand($createSql)->execute();
+}
         $command = $db2->createCommand("SHOW TABLES LIKE '{$table}'");
         $count = $command->queryAll();
         if (empty($count)) {
-            throw new HttpException(500,'表不存在~');
+            throw new HttpException(500,'表不存在');
         }
 
         $query_date = date('Y-m-d');

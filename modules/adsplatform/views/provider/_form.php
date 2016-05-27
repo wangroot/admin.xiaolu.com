@@ -23,7 +23,7 @@ use app\components\HodoActiveForm;
     </div>
     <div class="row">
         <div class="col-md-6">
-            <?= $form->textArea($model, 'remark')?>
+            <?= $form->textArea($model, 'remark' ,['labelOptions' => ['class' => 'control-label col-md-3']],['placeholder' => '选填'])?>
         </div>
     </div>
     <div class="row">

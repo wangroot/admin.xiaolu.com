@@ -11,7 +11,10 @@ use yii\bootstrap\Modal;
 use yii\helpers\Html;
 class HodoActionColumn extends \yii\grid\ActionColumn{
     public $header = '操作';
-    public $template ='{view} {update} {delete} {switch-status}'; // {delete}
+    public $template ='{view} {update} {switch-status} {delete}';
+
+    public $buttonOptions = ['class' => 'buttonOptions'];
+
     /**
      * modal title text
      */
@@ -58,15 +61,21 @@ JS;
         if (!isset($this->buttons['view'])) {
             $this->buttons['view'] = function ($url, $model, $key) {
                 $options = array_merge([
-                    'class' => 'activity-view-link',
+                    'class' => 'activity-view-link activity-view-link',
                     'title' => Yii::t('yii', 'View'),
                     'aria-label' => Yii::t('yii', 'View'),
                     'data-pjax' => '0',
                     'data-toggle' => 'modal',
                     //'data-target' => '#hodoactivity-modal',
                     'data-url' => $url
-                ], $this->buttonOptions);
-                return Html::a('查看', 'javascript:void(1)', $options);
+                ], []);
+                $encodeUrl = urldecode($url);
+                $permission = substr($encodeUrl, strpos($encodeUrl, 'r=')+2);
+                $permission = substr($permission, 0, strpos($permission, '&'));
+                if(Yii::$app->user->can('/'.$permission)){
+                    return Html::a('查看', 'javascript:void(1)', $options);
+                }
+                return false;
             };
         }
         if (!isset($this->buttons['update'])) {
@@ -76,7 +85,13 @@ JS;
                     'aria-label' => Yii::t('yii', 'Update'),
                     'data-pjax' => '0',
                 ], $this->buttonOptions);
-                return Html::a('编辑', $url, $options);
+                $encodeUrl = urldecode($url);
+                $permission = substr($encodeUrl, strpos($encodeUrl, 'r=')+2);
+                $permission = substr($permission, 0, strpos($permission, '&'));
+                if(Yii::$app->user->can('/'.$permission)) {
+                    return Html::a('编辑', $url, $options);
+                }
+                return false;
             };
         }
         if (!isset($this->buttons['delete'])) {
@@ -87,14 +102,20 @@ JS;
                     'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
                     'data-method' => 'post',
                     'data-pjax' => '0',
+                    'style' => 'color:#ff5c41'
                 ], $this->buttonOptions);
-                return Html::a('删除', $url, $options);
+                $encodeUrl = urldecode($url);
+                $permission = substr($encodeUrl, strpos($encodeUrl, 'r=')+2);
+                $permission = substr($permission, 0, strpos($permission, '&'));
+                if(Yii::$app->user->can('/'.$permission)) {
+                    return Html::a('删除', $url, $options);
+                }
+                return false;
             };
         }
         if (!isset($this->buttons['switch-status'])) {
             $this->buttons['switch-status'] = function ($url, $model, $key)  {
                 $parameter = '';
-                $label = '未设置';
                 $strategy_id = Yii::$app->request->getQueryParam('strategy_id');
                 if(!empty($strategy_id)){
                     $parameter .= '&strategy_id='. $strategy_id;
@@ -110,7 +131,13 @@ JS;
                     'data-method' => 'post',
                     'data-pjax' => '0',
                 ], $this->buttonOptions);
-                return Html::a($confirm, $url.$parameter, $options);
+                $encodeUrl = urldecode($url);
+                $permission = substr($encodeUrl, strpos($encodeUrl, 'r=')+2);
+                $permission = substr($permission, 0, strpos($permission, '&'));
+                if(Yii::$app->user->can('/'.$permission)){
+                 return Html::a($confirm, $url.$parameter, $options);
+                }
+                return false;
             };
         }
 

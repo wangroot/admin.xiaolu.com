@@ -32,21 +32,16 @@ use yii\widgets\Pjax;
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6">
-
-        </div>
-        <div class="col-md-6">
-
+    <div class="form-group text-right">
+        <div class="col-md-12">
+            <?php if(Yii::$app->user->can('/adsplatform/position/create')){?>
+                <?= Html::a('新增广告类型',['/adsplatform/position/create'], ['class' => 'btn btn-success']) ?>
+            <?php }?>
+            <?= Html::submitButton('筛选', ['class' => 'btn btn-primary ']) ?>
         </div>
     </div>
-
-    <div class="form-group">
-        <?= Html::submitButton('筛选', ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('新增广告类型',['/adsplatform/position/create'], ['class' => 'btn btn-success']) ?>
-    </div>
-
     <?php HodoActiveForm::end(); ?>
+
 </div>
 <?php Pjax::end()?>
 

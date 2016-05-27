@@ -8,14 +8,104 @@ namespace app\components;
  */
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
+use app\extensions\behaviors\BaseManager;
+use yii\db\Exception;
 
 class HodoActiveRecord extends ActiveRecord
 {
+
     const CREATE_USER_ID = 'create_user_id';
     const UPDATE_USER_ID = 'update_user_id';
     const CREATE_USER_IP = 'create_user_ip';
     const STATUS = 'status';
     const STATUS_VALUE = 3;
+
+    /**
+     * 操作日志显示的名称
+     */
+    public $adminLog = ' ';
+    /**
+     * @var BaseManager
+     */
+    protected $_historyManager = 'app\extensions\behaviors\DbManager';
+
+    /**
+     * @var array
+     */
+    protected $_optionsHistoryManager;
+
+
+    /**
+     * PS:此方法不能乱删除
+     * @param $res
+     * @return string
+     */
+    public static function implodeArray($res)
+    {
+        return implode(', ', array_map(function ($v, $k) {
+            return sprintf("%s=%s", $k, $v);
+        }, $res, array_keys($res)));
+    }
+    /**
+     *  * PS:此方法不能乱删除
+     * 操作日志默认的显示名称与url地址
+     * @param int $isNewRecord 默认是插入(0) 是插入的记录还是更新的记录
+     * @param array $data 一个model对应的字段名称数据
+     */
+    public static function getOperatingRecordLog($data, $isNewRecord=0)
+    {
+       return '';
+    }
+
+    /**
+     * @param bool $insert
+     * @param array $changedAttributes
+     * @throws \yii\db\Exception
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        /*
+         * @var $manager app\extensions\behaviors\DBManager
+         */
+        try{
+            if (!class_exists($this->_historyManager)) {
+                return parent::afterSave($insert, $changedAttributes);
+            }
+            $manager = new $this->_historyManager;
+
+            $type = $insert ? $manager::AR_INSERT : $manager::AR_UPDATE;
+
+            if ($this->getOldPrimaryKey() != $this->getPrimaryKey())
+                $type = $manager::AR_UPDATE_PK;
+
+            $manager->setOptions($this->_optionsHistoryManager)
+                ->setUpdatedAndInsertFields($changedAttributes, $this->attributes)
+                ->run($type, $this);
+        }catch(Exception $e){
+
+        }
+        return parent::afterSave($insert, $changedAttributes);
+    }
+
+    public function afterDelete()
+    {
+
+        try{
+            if (!class_exists($this->_historyManager)) {
+                return parent::afterDelete();
+            }
+            $manager = new $this->_historyManager;
+            $manager->setOptions($this->_optionsHistoryManager)
+                ->setUpdatedAndInsertFields($changedAttributes=[], $this->attributes)
+                ->run($manager::AR_DELETE, $this);
+        }catch(Exception $e){
+
+        }
+        return parent::afterDelete();
+    }
+
+
+
     /**
      * @return false|int
      * @throws \Exception

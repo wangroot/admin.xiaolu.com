@@ -85,6 +85,7 @@ class SiteController extends Controller
 
     public function actionContact()
     {
+        return $this->redirect(Yii::$app->homeUrl);
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
             Yii::$app->session->setFlash('contactFormSubmitted');
@@ -98,10 +99,7 @@ class SiteController extends Controller
 
     public function actionAbout()
     {
+        return $this->redirect(Yii::$app->homeUrl);
         return $this->render('about');
-    }
-    public function actionPicture()
-    {
-        echo 'test';
     }
 }

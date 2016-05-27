@@ -26,27 +26,50 @@ $this->params['breadcrumbs'][] = $this->title;
 <body>
 <?php $this->beginBody() ?>
 
-<div class="container">
+<div id="login-background">
+    <div class="logo-background">
+    </div>
+</div>
+<div class="container" style="margin-top: 37px">
 
         <?php $form = ActiveForm::begin([
             'id' => 'login-form',
-            'options' => ['class' => 'form-signin'],
-//            'fieldConfig' => [
-//                'template' => "{label}\n<div class=\"col-lg-3\">{input}</div>\n<div class=\"col-lg-8\">{error}</div>",
-//                'labelOptions' => ['class' => 'col-lg-1 control-label'],
-//            ],
+            'options' => [
+                'class' => 'form-inline',
+                'style' => 'text-align: center;',
+            ],
+            'fieldConfig' => [
+               // 'template' => "{label}\n<div class=\"col-lg-3\">{input}</div>\n<div class=\"col-lg-8\">{error}</div>",
+                'labelOptions' => ['style' => 'padding-right:22px'],
+            ],
         ]); ?>
-        <h2 class="form-signin-heading"><?= Html::encode($this->title) ?></h2>
-        <label for="inputEmail" class="sr-only">后台账号</label>
-        <?= $form->field($model, 'username')->textInput(["placeholder"=>"后台账号",'required'=> 'required', 'autofocus'=>'autofocus' ])->label(false)?>
-        <label for="inputPassword" class="sr-only">后台密码</label>
-        <?= $form->field($model, 'password')->passwordInput(["class"=>"form-control" ,"placeholder"=>"后台密码", "required"=>"required"])->label(false)?>
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" value="remember-me"> 自动登陆
-            </label>
+    <div style="margin-left: 56px">
+        <div class="row">
+            <?= $form->field($model, 'username')
+                ->textInput(["placeholder"=>"请输入账号",'required'=> 'required', 'autofocus'=>'autofocus', 'style'=>' width: 399px;
+  height: 46px;' ])
+                ->label()?>
         </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">登陆</button>
+
+        <div class="row">
+            <?= $form->field($model, 'password')
+                ->passwordInput(["class"=>"form-control" ,"placeholder"=>"请输入密码", "required"=>"required", 'style'=>' width: 399px;
+  height: 46px;'])
+                ->label()?>
+        </div>
+</div>
+        <div class="row">
+            <div class="checkbox" style="margin-right: 231px; margin-bottom: 20px">
+                <label>
+                    <input type="checkbox" value="remember-me">记住密码
+                </label>
+            </div>
+        </div>
+
+        <div class="row">
+            <button class="btn"  style="margin-left: 100px; width: 400px; background-color: #3191ff; color: #FFFFFF" type="submit">登录</button>
+        </div>
+
     <?php ActiveForm::end(); ?>
 </div> <!-- /container -->
 

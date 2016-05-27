@@ -60,37 +60,45 @@ $this->params['breadcrumbs'][] = ['label'=>$this->title,'iconClass' => 'fa fa-ed
                 <?= $form->textInput($model, 'ad_id') ?>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-6">
-                <?= $form->dropDownList($model, 'status', [], Datadict::getDataList('ad_status')) ?>
-            </div>
-        </div>
+
         <div class="row">
             <div class="col-md-6">
                 <?= $form->textInput($model, 'ceiling_view', ['labelOptions' => ['class' => 'control-label col-md-3',]]) ?>
+            </div>
+            <div class="col-md-6">
+                <label for="" class="control-label input_tip">针对单个设备每天的显示次数上限，默认为0表示不限制</label>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6">
                 <?= $form->textInput($model, 'show_time', ['labelOptions' => ['class' => 'control-label col-md-3', 'placeholder'=>'2016-04-18 00:00:00']]) ?>
             </div>
-        </div>
-        <div class="row">
             <div class="col-md-6">
-                <?= $form->textInput($model, 'start_time', ['labelOptions' => ['class' => 'control-label col-md-3', 'placeholder'=>'2016-04-18 00:00:00']]) ?>
+                <label for="" class="control-label input_tip">单位为秒</label>
             </div>
         </div>
-        <div class="row">
+        <div class="row hidden">
             <div class="col-md-6">
-                <?= $form->textInput($model, 'end_time',  ['labelOptions' => ['class' => 'control-label col-md-3', 'placeholder'=>'2016-04-18 00:00:00']]) ?>
+                <?= $form->textInput($model, 'start_time', ['labelOptions' => ['class' => 'control-label col-md-3 hidden', 'placeholder'=>'2016-04-18 00:00:00']], ['class'=>'hidden']) ?>
+            </div>
+        </div>
+        <div class="row hidden">
+            <div class="col-md-6">
+                <?= $form->textInput($model, 'end_time',  ['labelOptions' => ['class' => 'control-label col-md-3 hidden', 'placeholder'=>'2016-04-18 00:00:00']], ['class'=>'hidden']) ?>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-md-2"></div>
+            <div class="col-md-6">
+                <?= $form->dropDownList($model, 'status', [], Datadict::getDataList('ad_status')) ?>
+            </div>
+        </div>
+
+        <div class="form-group text-right">
+
             <div class="col-md-6">
                 <?= Html::submitButton($model->isNewRecord ? '完成' : '更新', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
-                <?= Html::a('取消', Url::toRoute('index') ,['class' => 'btn btn-default']) ?>
+                <?= Html::a('取消', Url::toRoute('list') ,['class' => 'btn btn-default']) ?>
             </div>
         </div>
 

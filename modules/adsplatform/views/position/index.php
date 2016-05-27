@@ -23,6 +23,10 @@ $this->params['breadcrumbs'][] = ['label'=>$this->title,'iconClass' => 'fa fa-ta
         <?= HodoGridView::widget([
             'dataProvider' => $dataProvider,
             'columns' => [
+                [
+                    'label' => 'id',
+                    'attribute' => 'id'
+                ],
                 'name',
                 [
                     'attribute' => 'platform',
@@ -36,14 +40,22 @@ $this->params['breadcrumbs'][] = ['label'=>$this->title,'iconClass' => 'fa fa-ta
                         return Datadict::getDataValue('position_type', $data->type);
                     },
                 ],
-                'total',
+                /*'total',
                 'height',
-                'width',
-                'create_time:date',
+                'width',*/
+
                 [
+                    'attribute' => 'create_time',
+                    'format' => ['date','php:Y-m-d H:i']
+                ],
+                [
+                    'format' => 'html',
                     'attribute' => 'status',
                     'value' => function($data){
-                        return Datadict::getDataValue('strategy_list_status', $data->status);
+                        $style = ['style'=>'color:#738186'];
+                        if($data->status)
+                            $style = ['style'=>'color:#22bf6c'];
+                        return Html::tag('div',Datadict::getDataValue('strategy_list_status', $data->status),$style);
                     },
                 ],
 

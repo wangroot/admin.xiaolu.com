@@ -17,12 +17,80 @@ use yii\web\NotFoundHttpException;
 use app\components\HodoActiveForm;
 use yii\helpers\Url;
 use yii\web\Response;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use app\modules\adsplatform\models\Ad;
 
 /**
  * StrategyController implements the CRUD actions for Strategy model.
  */
 class StrategyController extends HodoController
 {
+
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/strategy/index'],
+                    ],
+                    [
+                        'actions' => ['view'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/strategy/view'],
+                    ],
+                    [
+                        'actions' => ['update'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/strategy/update'],
+                    ],
+                    [
+                        'actions' => ['create', 'json'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/strategy/create'],
+                    ],
+                    [
+                        'actions' => ['switch-status'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/strategy/switch-status'],
+                    ],
+
+                ],
+            ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param $id
+     * @param $status
+     * @return \yii\web\Response
+     * @throws NotFoundHttpException
+     * 通过id来获取广告数据
+     */
+    public function actionJson($providerId=null, $positionId=null){
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        if (!Yii::$app->request->isAjax) {
+            return [
+                'status' => 'error'
+            ];
+        }
+
+        $result = Ad::getAdList($providerId, $positionId);
+        return [
+            'status' => 'success',
+            'data' => $result
+        ];
+    }
 
     public function actionSwitchStatus($id, $status)
     {
@@ -97,8 +165,8 @@ class StrategyController extends HodoController
             $connection = Yii::$app->db;
             $Transaction = $connection->beginTransaction();
             try {
-                $errors = [];
-                $errorsMessage = '';
+                $errors = $arr = [];
+                $errorsMessage =$errorsStr = '';
                 if (!$model->save()) {
                     $Transaction->rollback();
                     $errors[] = $model->getErrors();
@@ -110,7 +178,7 @@ class StrategyController extends HodoController
                 $sAdList = Yii::$app->request->post('StrategyAdList');
                 $sList = Yii::$app->request->post('StrategyList');
 
-                if ($model->status && empty($sAdList)) {
+                if ($model->status && empty($sAdList['name'])) {
                     $Transaction->rollback();
                     return [
                         'status' => 'message',
@@ -122,15 +190,22 @@ class StrategyController extends HodoController
                     $ad_id = ArrayHelper::getValue($sAdList, 'name');
                     $weight = ArrayHelper::getValue($sAdList, 'weight');
                     $status = ArrayHelper::getValue($sAdList, 'status');
-                    foreach ($ad_id as $key => $val) {
-                        $status = array_values($status);
-                        $strategyAdListModel = new StrategyAdList();
-                        $strategyAdListModel->strategy_id = $model->id;
-                        $strategyAdListModel->ad_id = $val;
-                        $strategyAdListModel->weight = $weight[$key];
-                        $strategyAdListModel->status = $status[$key];
-                        if (!$strategyAdListModel->save()) {
-                            $errorsMessage .= '广告:'.implode("",array_map(function($a) {return implode("",$a);},$strategyAdListModel->errors));
+                    if(!empty($ad_id)) {
+                        foreach ($ad_id as $key => $val) {
+                            $status = array_values($status);
+                            $strategyAdListModel = new StrategyAdList();
+                            $strategyAdListModel->strategy_id = $model->id;
+                            $strategyAdListModel->ad_id = $val;
+                            $strategyAdListModel->weight = $weight[$key];
+                            $strategyAdListModel->status = $status[$key];
+                            if (!$strategyAdListModel->save()) {
+                                $arr[] = implode("", array_map(function ($a) {
+                                    return implode("", $a);
+                                }, $strategyAdListModel->errors));
+                            }
+                        }
+                        if (!empty($arr)) {
+                            $errorsMessage = '广告:'.implode("",array_unique(array_values($arr)));
                         }
                     }
                 }
@@ -159,7 +234,7 @@ class StrategyController extends HodoController
                             if ($value === 'position') {
                                 $strategyList->type = $c==1?$ruleData[0]:$val[0];
                                 $strategyList->rule = $c==1?$ruleData[1]:$val[1];
-                                $strategyList->rule_content = $versionContents[$k];
+                                $strategyList->rule_content = str_replace(["\r\n", "\n", "\r", '，'], ',',$versionContents[$k]);
                                 //var_dump($versionRule,$c,$ruleData,$strategyList);die;
 
                             } elseif ($value === 0) {
@@ -169,15 +244,16 @@ class StrategyController extends HodoController
                             } else {
                                 $strategyList->type = $value;
                                 $strategyList->rule = $val;
-                                $strategyList->rule_content = $versionContents[$k];
-
+                                $strategyList->rule_content = str_replace(["\r\n", "\n", "\r", '，'], ',', $versionContents[$k]);
                             }
                             if (!$strategyList->save()) {
-                                $errorsMessage .= '策略规则:'.implode("",array_map(function($a) {return implode("",$a);},$strategyList->errors));
+                                $arr[] = implode("",array_map(function($a) {return implode("",$a);},$strategyList->errors));
                             }
                         }
                     }
-                    //die;
+                    if (!empty($arr)) {
+                        $errorsMessage = '策略规则:'.implode("",array_unique(array_values($arr)));
+                    }
                 }
                 if (strlen($errorsMessage) > 0) {
                     $Transaction->rollback();
@@ -237,7 +313,7 @@ class StrategyController extends HodoController
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-            $errors = [];
+            $errors = $arr = [];
             $errorsMessage = '';
             if (!$model->save()) {
                 $errors[] = $model->getErrors();
@@ -250,6 +326,17 @@ class StrategyController extends HodoController
             $sList = Yii::$app->request->post('StrategyList');
 
             if (!empty($sAdList)) {
+                /*删除*/
+                $deleteData = ArrayHelper::getValue($sAdList, 'delete');
+                if(!empty($deleteData)){
+                    $db = Yii::$app->db;
+                    foreach($deleteData as $id=>$value){
+                        $db->createCommand()->delete('strategy_ad_list', 'id=:i', [':i'=>(int)$id])->execute();
+                    }
+                    unset($sAdList['delete']);
+                }
+
+                /*更新*/
                 $updateData = ArrayHelper::getValue($sAdList, 'update');
                 if (!empty($updateData)) {
                     foreach ($updateData as $id => $data) {
@@ -269,8 +356,11 @@ class StrategyController extends HodoController
                         $strategyAdListModel->weight = $weight[$key];
                         $strategyAdListModel->status = $status[$key];
                         if (!$strategyAdListModel->save()) {
-                            $errorsMessage .= '广告:'.implode("",array_map(function($a) {return implode("",$a);},$strategyAdListModel->errors));
+                            $arr[] = implode("",array_map(function($a) {return implode("",$a);},$strategyAdListModel->errors));
                         }
+                    }
+                    if (!empty($arr)) {
+                        $errorsMessage = '广告:'.implode("",array_unique(array_values($arr)));
                     }
                 }
             }
@@ -280,14 +370,23 @@ class StrategyController extends HodoController
                 $rule = ArrayHelper::getValue($sList, 'rule');
                 $contents = ArrayHelper::getValue($sList, 'contents');
                 $sListUpdate = ArrayHelper::getValue($sList, 'update');
-
+                /*删除*/
+                $sListDelete = ArrayHelper::getValue($sList, 'delete');
+                if(!empty($sListDelete)){
+                    $db = Yii::$app->db;
+                    foreach($sListDelete as $id=>$value){
+                        $db->createCommand()->delete('strategy_list', 'id=:i', [':i'=>(int)$id])->execute();
+                    }
+                    unset($sList['delete']);
+                }
+                /**更新*/
                 if (!empty($sListUpdate)) {
-                    //var_dump($sListUpdate);die;
                     foreach ($sListUpdate as $id => $value) {
+                        $strReplace = str_replace(["\r\n", "\n", "\r", '，'], ",",$value['contents'][0]);
                         if (isset($value['position'])) {
-                            StrategyList::updateAll(['type' => $value['position']['type'][0], 'rule' => $value['position']['rule'][0], 'rule_content' => $value['contents'][0]], 'id=:i', [':i' => $id]);
+                            StrategyList::updateAll(['type' => $value['position']['type'][0], 'rule' => $value['position']['rule'][0], 'rule_content' => $strReplace], 'id=:i', [':i' => $id]);
                         } else {
-                            $ruleContent = is_array($value['contents']) ? implode(',', $value['contents']) : $value['contents'][0];
+                            $ruleContent = (is_array($value['contents'])) ? str_replace(["\r\n", "\n", "\r", '，'], ",",implode(',', $value['contents'])) : $strReplace;
                             StrategyList::updateAll(['rule' => $value['rule'][0], 'rule_content' => $ruleContent], 'id=:i', [':i' => $id]);
                         }
                     }
@@ -316,7 +415,7 @@ class StrategyController extends HodoController
                             if ($value === 'position') {
                                 $strategyList->type = $c==1?$ruleData[0]:$val[0];
                                 $strategyList->rule = $c==1?$ruleData[1]:$val[1];
-                                $strategyList->rule_content = $versionContents[$k];
+                                $strategyList->rule_content = str_replace(["\r\n", "\n", "\r", '，'], ',',$versionContents[$k]);
                                 //var_dump($versionRule,$ruleData,$strategyList);die;
 
                             } elseif ($value === 0) {
@@ -326,14 +425,17 @@ class StrategyController extends HodoController
                             } else {
                                 $strategyList->type = $value;
                                 $strategyList->rule = $val;
-                                $strategyList->rule_content = $versionContents[$k];
+                                $strategyList->rule_content = str_replace(["\r\n", "\n", "\r", '，'], ',',$versionContents[$k]);
                             }
                             if (!$strategyList->save()) {
-                                $errorsMessage .= '策略规则:' . implode("", array_map(function ($a) {
+                                $arr[] =  implode("", array_map(function ($a) {
                                         return implode("", $a);
                                     }, $strategyList->errors));
                             }
                         }
+                    }
+                    if (!empty($arr)) {
+                        $errorsMessage = '策略规则:'.implode("",array_unique(array_values($arr)));
                     }
                 }
             }
@@ -377,8 +479,8 @@ class StrategyController extends HodoController
         $Transaction = $connection->beginTransaction();
         try {
             $this->findModel($id)->delete();
-            StrategyList::deleteAll('strategy_id:s', [':s' => $id]);
-            StrategyAdList::deleteAll('strategy_id:s', [':s' => $id]);
+            StrategyList::deleteAll('strategy_id=:s', [':s' => $id]);
+            StrategyAdList::deleteAll('strategy_id=:s', [':s' => $id]);
             $Transaction->commit();
         } catch (Exception $e) {
             $Transaction->rollback();

@@ -20,7 +20,6 @@ use yii\caching\DbDependency;
  * @property string $games
  * @property string $component
  * @property integer $display
- * @property integer $create_time
  */
 class Datadict extends \yii\db\ActiveRecord
 {
@@ -68,7 +67,6 @@ class Datadict extends \yii\db\ActiveRecord
         }
         return $arr;
     }
-    
 
 
     /**

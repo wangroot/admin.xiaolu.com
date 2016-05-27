@@ -20,7 +20,8 @@ use app\modules\adsplatform\models\Position;
             'method' => 'get',
             'is_search' => true,
             'options' => [
-                'data-pjax' => true
+                'data-pjax' => true,
+                'class' => 'form-horizontal',
             ]
         ]); ?>
 
@@ -72,9 +73,14 @@ use app\modules\adsplatform\models\Position;
             </div>
         </div>
 
-        <div class="form-group">
-            <?= Html::submitButton('筛选', ['class' => 'btn btn-primary']) ?>
-            <?= Html::a('新增广告',['/adsplatform/ad/create'], ['class' => 'btn btn-success']) ?>
+        <div class="form-group text-right">
+            <div class="col-md-12">
+                <?php if(Yii::$app->user->can('/adsplatform/ad/create')){?>
+                    <?= Html::a('新增广告',['/adsplatform/ad/create'], ['class' => 'btn btn-success']) ?>
+                <?php }?>
+                <?= Html::submitButton('筛选', ['class' => 'btn btn-primary ' ]) ?>
+            </div>
+
         </div>
 
         <?php HodoActiveForm::end(); ?>

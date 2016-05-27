@@ -18,7 +18,8 @@ use app\modules\adsplatform\models\Ad;
             'action' => ['index'],
             'method' => 'get',
             'options' => [
-                'data-pjax' => true
+                'data-pjax' => true,
+                'class' => 'form-horizontal',
             ]
         ]); ?>
 
@@ -35,7 +36,7 @@ use app\modules\adsplatform\models\Ad;
                 ])?>
             </div>
             <div class="col-md-6">
-                <?php // $form->textInput($model, 'create_time')?>
+                <?=  $form->textInput($model, 'ad_name')?>
             </div>
         </div>
 
@@ -45,8 +46,10 @@ use app\modules\adsplatform\models\Ad;
             </div>
         </div>
 
-        <div class="form-group">
-            <?= Html::submitButton('搜索', ['class' => 'btn btn-primary']) ?>
+        <div class="form-group text-right">
+            <div class="col-md-12">
+                <?= Html::submitButton('筛选', ['class' => 'btn btn-primary ' ]) ?>
+            </div>
         </div>
 
         <?php HodoActiveForm::end(); ?>

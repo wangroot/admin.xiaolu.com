@@ -27,7 +27,10 @@ $this->registerJsFile('@web/js/jquery-form.js', ['position' => \yii\web\View::PO
     </div>
     <div class="row">
         <div class="col-md-6">
-            <?= $form->textInput($model, 'subtitle') ?>
+            <?= $form->textInput($model, 'subtitle',['labelOptions' => ['class' => 'control-label col-md-3']],['placeholder' => '选填']) ?>
+        </div>
+        <div class="col-md-6">
+            <label for="" class="control-label input_tip">广告触发时显示在通知栏的标题</label>
         </div>
     </div>
     <div class="row">
@@ -57,7 +60,7 @@ $this->registerJsFile('@web/js/jquery-form.js', ['position' => \yii\web\View::PO
     </div>
     <div class="row">
         <div class="col-md-6">
-            <?= $form->textInput($model, 'image',['labelOptions' => ['class' => 'control-label col-md-3', 'id' => "label_image"]],['id' => 'image']) ?>
+            <?= $form->textInput($model, 'image',['labelOptions' => ['class' => 'control-label col-md-3']],['id' => 'image']) ?>
         </div>
         <div class="col-md-3">
             <div class="btn btn-primary"  id="btn_image">
@@ -67,8 +70,14 @@ $this->registerJsFile('@web/js/jquery-form.js', ['position' => \yii\web\View::PO
 
     </div>
     <div class="row">
+        <div class="col-md-6 col-md-offset-2" >
+            <a href="" id="a_image" target="_blank"><img src="" alt="" id="img_image" width="" ></a>
+        </div>
+    </div>
+    <br>
+    <div class="row">
         <div class="col-md-6">
-            <?= $form->textInput($model, 'image_vertical',['labelOptions' => ['class' => 'control-label col-md-3', 'id' => "label_image_vertical"]],['id' => 'image_vertical']) ?>
+            <?= $form->textInput($model, 'image_vertical',['labelOptions' => ['class' => 'control-label col-md-3']], ['id' => 'image_vertical']) ?>
         </div>
         <div class="col-md-3">
             <div class="btn btn-primary" id="btn_image_vertical">
@@ -77,28 +86,48 @@ $this->registerJsFile('@web/js/jquery-form.js', ['position' => \yii\web\View::PO
         </div>
     </div>
     <div class="row">
+        <div class="col-md-6 col-md-offset-2">
+            <a href="" id="a_image_vertical" target="_blank"><img src="" alt="" id="img_image_vertical" width="" ></a>
+        </div>
+    </div>
+    <br>
+    <div class="row">
         <div class="col-md-6">
             <?= $form->textInput($model, 'link') ?>
         </div>
     </div>
+
     <div class="row">
         <div class="col-md-6">
-            <?= $form->textInput($model, 'detail') ?>
+            <?= $form->textInput($model, 'package_name',['labelOptions' => ['class' => 'control-label col-md-3']],['placeholder' => '选填']) ?>
+        </div>
+        <div class="col-md-6">
+            <label for="" class="control-label input_tip">广告APP的包名</label>
         </div>
     </div>
+
     <div class="row">
         <div class="col-md-6">
-            <?= $form->textInput($model, 'package_name') ?>
+            <?= $form->textarea($model, 'detail',['labelOptions' => ['class' => 'control-label col-md-3']],['placeholder' => '选填']) ?>
+        </div>
+        <div class="col-md-6">
+            <label for="" class="control-label input_tip">广告APP的详情</label>
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
             <?= $form->textInput($model, 'version_code') ?>
         </div>
+        <div class="col-md-6">
+            <label for="" class="control-label input_tip">广告APP的版本号</label>
+        </div>
     </div>
     <div class="row">
         <div class="col-md-6">
             <?= $form->radioList($model, 'collect_data', [], Datadict::getDataList('ad_collect_data')) ?>
+        </div>
+        <div class="col-md-6">
+            <label for="" class="control-label input_tip">选中收集信息会上传用户已安装应用的包名数据</label>
         </div>
     </div>
     <div class="row">
@@ -120,6 +149,17 @@ $this->registerJsFile('@web/js/jquery-form.js', ['position' => \yii\web\View::PO
         <div class="col-md-6">
             <?= $form->textInput($model, 'ceiling_view') ?>
         </div>
+        <div class="col-md-6">
+            <label for="" class="control-label input_tip">针对单个设备，每天的显示次数上限</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->textInput($model, 'ceiling_day_view') ?>
+        </div>
+        <div class="col-md-6">
+            <label for="" class="control-label input_tip">针对所有设备，每天的显示次数上限</label>
+        </div>
     </div>
     <div class="row">
         <div class="col-md-6">
@@ -130,10 +170,17 @@ $this->registerJsFile('@web/js/jquery-form.js', ['position' => \yii\web\View::PO
         <div class="col-md-6">
             <?= $form->textInput($model, 'ceiling_total_view') ?>
         </div>
+        <div class="col-md-6">
+            <label for="" class="control-label input_tip">该广告的生命周期内在所有设备上的展示次数上限
+            </label>
+        </div>
     </div>
     <div class="row">
         <div class="col-md-6">
             <?= $form->textInput($model, 'ceiling_total_click') ?>
+        </div>
+        <div class="col-md-6">
+            <label for="" class="control-label input_tip">该广告的生命周期内在所有设备上的点击次数上限</label>
         </div>
     </div>
     <div class="row">
@@ -219,10 +266,7 @@ $this->registerJsFile('@web/js/jquery-form.js', ['position' => \yii\web\View::PO
                     <div class="progress-bar progress-bar-success bar" role="progressbar"
                          aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
                          style="width: 0%;">
-<!--                        <span class="bar" style="background: green;float: left;height: 100%;"></span>-->
                     </div>
-<!--                    <span class="bar" style="background: green;float: left;height: 100%;"></span>-->
-<!--                    <span class="percent">0%</span >-->
                 </div>
 <!--                <div class="files"></div>-->
 <!--                <div id="showing"></div>-->
@@ -241,6 +285,19 @@ $this->registerJsFile('@web/js/jquery-form.js', ['position' => \yii\web\View::PO
 <?php
     $js = <<<js
     $(document).ready(function(){
+        
+        var url_image = $('#image').val();
+        var url_image_vertical = $('#image_vertical').val();
+        if(  url_image != null && url_image != '' ) {
+            $('#img_image').attr('src', url_image);
+            $('#img_image').attr('width', '180px');
+            $('#a_image').attr('href', url_image);
+        }
+        if( url_image_vertical != null && url_image_vertical != '') {
+            $('#img_image_vertical').attr('src', url_image_vertical);
+            $('#img_image_vertical').attr('width', '180px');
+            $('#a_image_vertical').attr('href', url_image_vertical);
+        }
         var bar = $('.bar'); 
         var percent = $('.percent'); 
         var progress = $(".progress");
@@ -260,18 +317,17 @@ $this->registerJsFile('@web/js/jquery-form.js', ['position' => \yii\web\View::PO
             type ='image_vertical';
             return false;
         });
-        
         $('#upload').click(function () {
         
                uploadPic();
         });
-        
         function uploadPic() {
             
-            console.log(type);
+            var img_type = '#img_' + type; 
+            var a_type = '#a_' + type;
+            var choose = "#" + type;  
             $("#uploadForm").ajaxSubmit({
                 beforeSend: function() { //开始上传 
-                    
                     //showing.empty();//清空显示的图片
                     progress.show(); //显示进度条 
                     var percentVal = '0%'; //开始进度为0% 
@@ -284,28 +340,23 @@ $this->registerJsFile('@web/js/jquery-form.js', ['position' => \yii\web\View::PO
                     percent.html(percentVal); //显示上传进度百分比 
                 },
                 success:function(data) {
-
-                    if(type == 'image') {
-                        console.log(data);
-                        $('#image').val(data);
-                        $("#label_image").tooltip({
-                          html : true,
-                          title : "<img width='180px' src='"+data+"' >"
-                        });
-                    }else {
-                        $('#image_vertical').val(data);
-                        $("#label_image_vertical").tooltip({
-                          html : true,
-                          title : "<img width='180px' src='"+data+"'>"
-                        });
-                    }
-                    //$("#showing").html("<img src='"+data+"'>"); 
-                    $('#picModal').modal('toggle');
+                        
+                    $(choose).val(data);
+                    var res = "<img width='180px' src='"+data+"' >";
+                    $(img_type).attr('src', data);
+                    $(img_type).attr('width', '180px');
+                    $(a_type).attr('href', data);
+                    $('#picModal').modal('hide');
                     return false;
                 },
             });
             return false;
         }
+    
+        $('body').on('hidden.bs.modal', '.modal', function () {
+          $('#file').val('');
+          bar.width('0%');
+        });
     });
 js;
 $this->registerJs($js, \yii\web\View::POS_END)

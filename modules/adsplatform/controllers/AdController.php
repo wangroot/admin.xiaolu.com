@@ -27,15 +27,65 @@ class AdController extends HodoController
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'ad-create','ad-update','ad-delete', 'list', 'view', 'create', 'update', 'switch-status', 'json'],
+                        'actions' => ['index'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['/adsplatform/ad/index'],
+                    ],
+                    [
+                        'actions' => ['ad-create'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/ad/ad-create'],
+                    ],
+                    [
+                        'actions' => ['ad-update'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/ad/ad-update'],
+                    ],
+                    [
+                        'actions' => ['ad-delete'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/ad/ad-delete'],
+                    ],
+                    [
+                        'actions' => ['list'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/ad/list'],
+                    ],
+                    [
+                        'actions' => ['view'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/ad/view'],
+                    ],
+                    [
+                        'actions' => ['create'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/ad/create'],
+                    ],
+                    [
+                        'actions' => ['update'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/ad/update'],
+                    ],
+                    [
+                        'actions' => ['switch-status'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/ad/switch-status'],
+                    ],
+                    [
+                        'actions' => ['status'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/ad/status'],
+                    ],
+                    [
+                        'actions' => ['json'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/ad/json'],
                     ],
                     [
                         'actions' => ['delete'],
                         'allow' => true,
-                        'roles' => ['@'],
-                    ]
+                        'roles' => ['/adsplatform/ad/delete'],
+                    ],
                 ],
             ],
             'verbs' => [
@@ -83,7 +133,7 @@ class AdController extends HodoController
     }
 
     public function actionAdDelete($id){
-        $this->findModel($id)->delete();
+        $this->findAdPositionModel($id)->delete();
 
         return $this->redirect(['list']);
     }
@@ -96,7 +146,7 @@ class AdController extends HodoController
         $model->start_time = date('Y-m-d H:i:s');
         $model->end_time = date('Y-m-d H:i:s', strtotime('+1month'));
         $model->show_time = 5;
-        $model->ceiling_view = 1;
+        $model->ceiling_view = 0;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['list', 'id' => $model->id]);
         } else {
@@ -113,7 +163,7 @@ class AdController extends HodoController
      * @throws NotFoundHttpException
      * 通过id来获取广告数据
      */
-    public function actionJson($id){
+    public function actionJson($providerId=null, $positionId=null){
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         if (!Yii::$app->request->isAjax) {
             return [
@@ -121,13 +171,20 @@ class AdController extends HodoController
             ];
         }
 
-        $result = Ad::getAdList($id);
+        $result = Ad::getAdList($providerId, $positionId);
         return [
             'status' => 'success',
             'data' => $result
         ];
     }
 
+    /**
+     * @param $id
+     * @param $status
+     * @return \yii\web\Response
+     * @throws NotFoundHttpException
+     * 自主广告的状态
+     */
     public function actionSwitchStatus($id, $status){
         $model = $this->findModel($id);
         $model->status = $status;
@@ -135,6 +192,22 @@ class AdController extends HodoController
             return $this->redirect(['index']);
         }
         return $this->redirect(['index']);
+    }
+
+    /**
+     * @param $id
+     * @param $status
+     * @return \yii\web\Response
+     * @throws NotFoundHttpException
+     * 联盟广告的状态
+     */
+    public function actionStatus($id, $status){
+        $model = $this->findModel($id);
+        $model->status = $status;
+        if($model->save(false)){
+            return $this->redirect(['list']);
+        }
+        return $this->redirect(['list']);
     }
 
     /**
@@ -178,18 +251,23 @@ class AdController extends HodoController
     public function actionCreate()
     {
         $model = new Ad();
-        $model->ceiling_total_click = 1000000;
-        $model->ceiling_total_view = 1000000;
-        $model->type = 0;
+        $model->ceiling_total_click = 100000000;
+        $model->ceiling_total_view = 100000000;
+        $model->type = 1;
         $model->target = 0;
         $model->status = 0;
         $model->collect_data = 0;
+        $model->version_code = 0;
         $model->ceiling_view = 2;
         $model->show_time = 5;
-        $model->ceiling_day_click = 10000;
+        $model->ceiling_day_click = 1000000;
+        $model->ceiling_day_view = 1000000;
         $model->start_time = date('Y-m-d H:i:s');
         $model->end_time = date('Y-m-d H:i:s', strtotime('+1month'));
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            if (isset($_GET['callUrl'])) {
+                return $this->redirect($_GET['callUrl']);
+            }
             return $this->redirect(['index', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -241,6 +319,15 @@ class AdController extends HodoController
     protected function findModel($id)
     {
         if (($model = Ad::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+
+    protected function findAdPositionModel($id)
+    {
+        if (($model = AdPosition::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

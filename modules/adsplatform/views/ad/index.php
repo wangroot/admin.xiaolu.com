@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = ['label' => '自主广告列表', 'iconClass' =
                     'attribute' => 'id',
                 ],
                 'title',
-                'subtitle',
+                //'subtitle',
                 [
                     'attribute' => 'position_id',
                     'value' => function($data){
@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = ['label' => '自主广告列表', 'iconClass' =
                 [
                     'attribute'=>'target',
                     'value' => function($data){
-                        return Datadict::getDataValue('ad_target', $data->type);
+                        return Datadict::getDataValue('ad_target', $data->target);
                     }
                 ],
                 // 'detail:ntext',
@@ -82,10 +82,15 @@ $this->params['breadcrumbs'][] = ['label' => '自主广告列表', 'iconClass' =
 //                 'total_download',
 //                 'total_install',
 //                 'total_failure',
+
                 [
+                    'format' => 'html',
                     'attribute'=>'status',
                     'value' => function($data){
-                        return Datadict::getDataValue('strategy_list_status', $data->status);
+                        $style = ['style'=>'color:#738186'];
+                        if($data->status)
+                            $style = ['style'=>'color:#22bf6c'];
+                        return Html::tag('div', Datadict::getDataValue('strategy_list_status', $data->status),$style);
                     }
                 ],
 //                [
@@ -98,16 +103,19 @@ $this->params['breadcrumbs'][] = ['label' => '自主广告列表', 'iconClass' =
 //                ],
                 [
                     'attribute' => 'create_time',
-                    'format' => ['date','php:Y-m-d H:i:s']
+                    'format' => ['date','php:Y-m-d H:i']
                 ],      
                 // 'update_time:datetime',
                 [
                     'header' => '操作',
                     'class' => 'app\extensions\grid\HodoActionColumn',
-                    'template' => ' {update} {delete} {switch-status} {analysis}',
+                    'template' => ' {update}  {switch-status} {analysis} {delete}',
                     'buttons' => [
                         'analysis' => function ($url, $model, $key) {
-                           return Html::a('报表',Url::to(['ad-analysis/index', 'AnalysisEffect[ad_id]' => $model->id]), ['data-pjax' => '0',]);
+                            if(Yii::$app->user->can('/adsplatform/ad-analysis/index')){
+                                return Html::a('报表',Url::to(['ad-analysis/index', 'AnalysisEffect[ad_id]' => $model->id]), ['class' => 'buttonOptions',]);
+                            }
+                            return false;
                         }
                     ]
                 ],

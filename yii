@@ -10,8 +10,8 @@
 
 defined('YII_DEBUG') or define('YII_DEBUG', true);
 
-require(__DIR__ . '/vendor/autoload.php');
-require(__DIR__ . '/vendor/yiisoft/yii2/Yii.php');
+require(__DIR__ . '/yiisoft/vendor/autoload.php');
+require(__DIR__ . '/yiisoft/vendor/yiisoft/yii2/Yii.php');
 
 $config = require(__DIR__ . '/config/console.php');
 

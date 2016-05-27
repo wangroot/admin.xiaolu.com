@@ -1,1 +1,1 @@
-a:2:{i:0;a:1:{i:0;a:1:{s:5:"value";s:9:"按渠道";}}i:1;O:24:"yii\caching\DbDependency":5:{s:2:"db";s:2:"db";s:3:"sql";s:29:"SELECT count(*) FROM datadict";s:6:"params";a:0:{}s:4:"data";a:1:{s:8:"count(*)";s:2:"35";}s:8:"reusable";b:0;}}
+a:2:{i:0;a:1:{i:0;a:1:{s:5:"value";s:6:"渠道";}}i:1;O:24:"yii\caching\DbDependency":5:{s:2:"db";s:2:"db";s:3:"sql";s:29:"SELECT count(*) FROM datadict";s:6:"params";a:0:{}s:4:"data";a:1:{s:8:"count(*)";s:3:"126";}s:8:"reusable";b:0;}}

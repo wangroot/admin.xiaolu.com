@@ -52,9 +52,15 @@ $this->params['breadcrumbs'][] = ['label' => '策略广告列表', 'iconClass' =
                     'format' => ['date','php:Y-m-d']
                 ],            // 'update_time:datetime',
                 [
+                    'format' => 'html',
+
+
                     'attribute' => 'status',
                     'value' => function($data){
-                        return Datadict::getDataValue('strategy_list_status', $data->status);
+                        $style = ['style'=>'color:#738186'];
+                        if($data->status)
+                            $style = ['style'=>'color:#22bf6c'];
+                        return Html::tag('div',Datadict::getDataValue('strategy_list_status', $data->status),$style);
                     },
                 ],
                 [

@@ -39,7 +39,8 @@
         tMain2, tPreview, tIcon, tClose, tCaption, tBtnDefault, tBtnLink, tBtnBrowse, tModal, tProgress, tFooter,
         tActions, tActionDelete, tActionUpload, tZoom, tGeneric, tHtml, tImage, tText, tVideo, tAudio, tFlash, tObject,
         tOther, defaultLayoutTemplates, defaultPreviewTemplates, defaultPreviewTypes, defaultPreviewSettings, FileInput,
-        defaultFileTypeSettings, isEmpty, isArray, isSet, getElement, uniqId, htmlEncode, replaceTags, cleanMemory;
+        defaultFileTypeSettings, isEmpty, isArray, isSet, getElement, uniqId, htmlEncode, replaceTags, cleanMemory,
+        findFileName;
 
     NAMESPACE = '.fileinput';
     //noinspection JSUnresolvedVariable
@@ -528,6 +529,13 @@
         var data = $thumb.is('img') ? $thumb.attr('src') : $thumb.find('source').attr('src');
         /** @namespace objUrl.revokeObjectURL */
         objUrl.revokeObjectURL(data);
+    };
+    findFileName = function (filePath) {
+        var sepIndex = filePath.lastIndexOf('/');
+        if (sepIndex === -1) {
+            sepIndex = filePath.lastIndexOf('\\');
+        }
+        return filePath.split(filePath.substring(sepIndex, sepIndex + 1)).pop();
     };
     FileInput = function (element, options) {
         var self = this;
@@ -1719,6 +1727,8 @@
                 $container = self.$previewContainer, $status = self.$previewStatus, msgLoading = self.msgLoading,
                 msgProgress = self.msgProgress, previewInitId = self.previewInitId, numFiles = files.length,
                 settings = self.fileTypeSettings, ctr = self.filestack.length, readFile,
+                maxPreviewSize = self.maxFilePreviewSize && parseFloat(self.maxFilePreviewSize),
+                canPreview = $preview.length && (!maxPreviewSize || isNaN(maxPreviewSize)),
                 throwError = function (msg, file, previewId, index) {
                     var p1 = $.extend(true, {}, self._getOutData({}, {}, files), {id: previewId, index: index}),
                         p2 = {id: previewId, index: index, file: file, files: files};
@@ -1743,7 +1753,6 @@
                     self.totalImagesCount++;
                 }
             });
-
             readFile = function (i) {
                 if (isEmpty($el.attr('multiple'))) {
                     numFiles = 1;
@@ -1803,7 +1812,15 @@
                     self._raise('fileloaded', [file, previewId, i, reader]);
                     return;
                 }
-                if ($preview.length > 0 && FileReader !== undefined) {
+                if (!canPreview && fileSize > maxPreviewSize) {
+                    $container.addClass('file-thumb-loading');
+                    self._previewDefault(file, previewId);
+                    self._initFileActions();
+                    self._updateFileDetails(numFiles);
+                    readFile(i + 1);
+                    return;
+                }
+                if ($preview.length && FileReader !== undefined) {
                     $status.html(msgLoading.replace('{index}', i + 1).replace('{files}', numFiles));
                     $container.addClass('file-thumb-loading');
                     reader.onerror = function (evt) {
@@ -1814,8 +1831,7 @@
                         self._initFileActions();
                     };
                     reader.onloadend = function () {
-                        msg = msgProgress
-                            .replace('{index}', i + 1).replace('{files}', numFiles)
+                        msg = msgProgress.replace('{index}', i + 1).replace('{files}', numFiles)
                             .replace('{percent}', 50).replace('{name}', caption);
                         setTimeout(function () {
                             $status.html(msg);
@@ -1856,7 +1872,8 @@
         },
         _updateFileDetails: function (numFiles) {
             var self = this, $el = self.$element, fileStack = self.getFileStack(),
-                name = ($el[0].files[0] && $el[0].files[0].name) || (fileStack.length && fileStack[0].name) || '',
+                name = (isIE(9) && findFileName($el.val())) ||
+                    ($el[0].files[0] && $el[0].files[0].name) || (fileStack.length && fileStack[0].name) || '',
                 label = self.slug(name), n = self.isUploadable ? fileStack.length : numFiles,
                 nFiles = previewCache.count(self.id) + n, log = n > 1 ? self._getMsgSelected(nFiles) : label;
             if (self.isError) {
@@ -2683,6 +2700,7 @@
         resizeQuality: 0.92,
         resizeDefaultImageType: 'image/jpeg',
         maxFileSize: 0,
+        maxFilePreviewSize: 25600, // 25 MB
         minFileCount: 0,
         maxFileCount: 0,
         validateInitialCount: false,

@@ -22,13 +22,38 @@ class PositionController extends HodoController
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['login', 'error'],
+                        'actions' => ['error'],
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'switch-status'],
+                        'actions' => ['index'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['/adsplatform/position/index'],
+                    ],
+                    [
+                        'actions' => ['create'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/position/create'],
+                    ],
+                    [
+                        'actions' => ['view'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/position/view'],
+                    ],
+                    [
+                        'actions' => ['update'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/position/update'],
+                    ],
+                    [
+                        'actions' => ['delete'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/position/delete'],
+                    ],
+                    [
+                        'actions' => ['switch-status'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/position/switch-status'],
                     ],
                 ],
             ],

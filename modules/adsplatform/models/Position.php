@@ -6,6 +6,8 @@ use app\components\HodoActiveRecord;
 use Yii;
 use yii\caching\DbDependency;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
+
 /**
  * This is the model class for table "position".
  *
@@ -22,6 +24,76 @@ use yii\helpers\ArrayHelper;
  */
 class Position extends HodoActiveRecord
 {
+    /**
+     * 操作日志显示的名称
+     */
+    public $adminLog = '广告类型';
+    /**
+     * 操作日志默认的显示名称与url地址
+     * @param int $isNewRecord 默认是插入(0) 是插入的记录还是更新的记录
+     * @param array $data 一个model对应的字段名称数据
+     */
+    public static function getOperatingRecordLog($data, $isNewRecord=0)
+    {
+        switch($isNewRecord){
+            case 0:
+                return Html::a('新增广告类型:'.self::AttributeLabel('name').'='.$data['name'], ['position/index', 'PositionSearch[id]' => $data['id']]);
+                break;
+            case 1:
+                $oldValue = parent::implodeArray(self::byKeyFindValue($data['oldValue']));
+                $newValue = parent::implodeArray(self::byKeyFindValue($data['newValue']));
+                return '更新广告类型:从'.$oldValue.'更改到'.$newValue;
+                break;
+            case 2:
+                unset($data['width']);
+                unset($data['height']);
+                unset($data['total']);
+                $oldValue = parent::implodeArray(self::byKeyFindValue($data));
+                return '删除广告类型:'.$oldValue;
+                break;
+        }
+        return '';
+    }
+
+    public static function byKeyFindValue($arr){
+        if (isset($arr['update_time']) || isset($arr['create_time'])) {
+            unset($arr['update_time']);
+            unset($arr['create_time']);
+        }
+        foreach($arr as $key => $value){
+            if (!in_array($key, ['platform','type','status'])){
+                $arr[self::AttributeLabel($key)] = $value;
+                unset($arr[$key]);
+                continue;
+            }
+            $arr[self::AttributeLabel($key)] = Datadict::getDataValue(self::tableName().'_'.$key, $value);
+            unset($arr[$key]);
+        }
+        return $arr;
+    }
+
+    /**
+     * @param string $key
+     * @return array
+     */
+    public static function AttributeLabel($key)
+    {
+
+        $a = [
+            'id' => '主键',
+            'name' => '广告类型名称',
+            'platform' => '平台',
+            'type' => '类型',
+            'total' => '总数',
+            'width' => '宽度',
+            'height' => '高度',
+            'create_time' => '创建时间',
+            'update_time' => '更新时间',
+            'status' => '状态',
+        ];
+        return $a[$key];
+    }
+
 
     /**
      *
@@ -37,7 +109,7 @@ class Position extends HodoActiveRecord
                 ->orderBy('id desc')
                 ->asArray()
                 ->all();
-        }, 3600, $dep);
+        }, 60, $dep);
         return ArrayHelper::map($result, 'id', 'name');
     }
     public function HintFieldAttributeLabels(){
@@ -68,9 +140,10 @@ class Position extends HodoActiveRecord
      */
     public function attributeLabels()
     {
+
         return [
             'id' => '主键',
-            'name' => '代码类型名称',
+            'name' => '广告类型名称',
             'platform' => '平台',
             'type' => '类型',
             'total' => '总数',

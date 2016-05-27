@@ -4,10 +4,10 @@
 /* @var $content string */
 
 use yii\helpers\Html;
-use app\extensions\widget\Breadcrumbs;
 use app\assets\AppAsset;
 use yii\helpers\Url;
-use yii\bootstrap\Nav;
+use yii\widgets\Breadcrumbs;    
+
 AppAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
@@ -26,115 +26,129 @@ AppAsset::register($this);
 <body>
 <?php $this->beginBody() ?>
 
+<div class="nav-side-menu">
+    <div class="brand"><img class="site-logo" src="./images/admin-logo.png"></div>
+    <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+
+    <div class="menu-list">
+
+        <ul id="menu-content" class="menu-content collapse out">
+
+            <li>
+                <a class="admin-home" href="<?= Yii::$app->homeUrl ?>">首页</a>
+            </li>
+
+            <?php if(Yii::$app->user->can('/adsplatform/strategy/index')):?>
+                <li>
+                    <a href="<?= Url::to(['/adsplatform/strategy/index']) ?>">流量策略</a>
+                </li>
+            <?php endif;?>
+
+            <?php if(Yii::$app->user->can('/adsplatform/position/index')):?>
+                <li>
+                    <a href="<?= Url::to(['/adsplatform/position/index']) ?>">广告类型管理</a>
+                </li>
+            <?php endif; ?>
+
+            <?php if(Yii::$app->user->can('/adsplatform/ad/list')):?>
+            <li>
+                <a href="<?= Url::to(['/adsplatform/ad/list']) ?>">联盟广告管理</a>
+            </li>
+            <?php endif;?>
+
+            <?php if(Yii::$app->user->can('/adsplatform/ad/index')):?>
+                <li>
+                    <a href="<?= Url::to(['/adsplatform/ad/index']) ?>"><i class="fa "></i>自主广告管理</a>
+                </li>
+            <?php endif;?>
+
+            <?php if(Yii::$app->user->can('/adsplatform/ad-analysis/index')):?>
+                <li>
+                    <a href="<?= Url::to(['/adsplatform/ad-analysis/index']) ?>"><i class=""></i>广告报表</a>
+                </li>
+            <?php endif;?>
+
+            <?php if(Yii::$app->user->can('/coop-income/index')):?>
+                <li>
+                    <a href="<?= Url::to(['/coop-income/index'])?>"><i class=""></i>第三方广告报表</a>
+                </li>
+            <?php endif;?>
+
+            <?php if(Yii::$app->user->can('/adsplatform/channel/index')):?>
+                <li>
+                    <a href="<?= Url::to(['/adsplatform/channel/index']) ?>"><i class="fa "></i>渠道管理</a>
+                </li>
+            <?php endif;?>
+
+            <?php if(Yii::$app->user->can('/adsplatform/provider/index')):?>
+                <li>
+                    <a href="<?= Url::to(['/adsplatform/provider/index']) ?>"><i class="fa "></i>广告商管理</a>
+                </li>
+            <?php endif;?>
+
+            <?php if(Yii::$app->user->can('/admin-user/index')):?>
+                <li>
+                    <a href="<?= Url::to(['/admin-user/index']) ?>"><i class="fa  "></i>后台管理</a>
+                </li>
+            <?php endif;?>
+
+            <?php if(Yii::$app->user->can('/admin/role/index')):?>
+                <li>
+                    <a href="<?= Url::to(['/admin/role/index']) ?>"><i class="fa  "></i>角色管理</a>
+                </li>
+            <?php endif;?>
+
+            <?php if(Yii::$app->user->can('/adsplatform/admin-log/index')):?>
+                <li>
+                    <a href="<?= Url::to(['/adsplatform/admin-log/index']) ?>"><i class="fa  "></i>操作日志</a>
+                </li>
+            <?php endif;?>
+
+            <?php if(Yii::$app->user->can('/datadict/index')):?>
+                <li>
+                    <a href="<?= Url::to(['/datadict/index']) ?>"><i class="fa "></i>字典管理</a>
+                </li>
+            <?php endif;?>
+
+        </ul>
+    </div>
+</div>
 
 <div id="wrapper">
-
-    <!-- Navigation -->
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="<?=  Yii::$app->homeUrl?>">广告后台管理</a>
-        </div>
-        <!-- Top Menu Items -->
-        <ul class="nav navbar-right top-nav">
-            <li class="dropdown"  id="login-dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> <?= Yii::$app->user->identity->username?> <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a href="#"><i class="fa fa-fw fa-user"></i>个人信息</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-fw fa-envelope"></i>邮件</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-fw fa-gear"></i>用户设置</a>
-                    </li>
-                    <li class="divider"></li>
-                    <li>
-                        <?=
-                        Html::beginForm(['/site/logout'], 'post')
-                        . Html::submitButton(
-                            '<i class="fa fa-fw fa-power-off"></i>登出',
-                            ['class' => 'btn btn-link']
-                        )
-                        . Html::endForm()
-                        ?>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-        <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
-        <div class="collapse navbar-collapse navbar-ex1-collapse">
-            <ul class="nav navbar-nav side-nav" id="nav-left-menu">
-                <li>
-                    <a href="<?= Yii::$app->homeUrl?>"><i class="fa "></i>首页</a>
-                </li>
-                <li>
-                    <a href="<?= Url::to(['/adsplatform/strategy/index'])?>"><i class="fa "></i>流量策略</a>
-                </li>
-                <?php if(!in_array(Yii::$app->user->identity->username, ['guiyuan', 'chenfengxia'])){?>
-                    <li>
-                        <a href="<?= Url::to(['/adsplatform/position/index'])?>" ><i class="fa "></i>广告类型管理</a>
-                    </li>
-                <?php }?>
-
-                <li>
-                    <a href="<?= Url::to(['/adsplatform/ad/list'])?>" ><i class="fa "></i>联盟广告管理</a>
-                </li>
-
-                <li>
-                    <a href="<?= Url::to(['/adsplatform/ad/index'])?>" ><i class="fa "></i>自主广告管理</a>
-                </li>
-                <li>
-                    <a href="<?= Url::to(['/adsplatform/ad-analysis/index'])?>" ><i class=""></i>广告报表</a>
-                </li>
-                <?php if(!in_array(Yii::$app->user->identity->username, ['guiyuan', 'chenfengxia'])){?>
-                <li>
-                    <a href="<?= Url::to(['/adsplatform/provider/index'])?>"><i class="fa "></i>广告商管理</a>
-                </li>
-                <li>
-                    <a href="<?= Url::to(['/admin-user/index'])?>"><i class="fa  "></i>后台管理</a>
-                </li>
-                <li>
-                    <a href="<?= Url::to(['/datadict/index'])?>"><i class="fa "></i>字典管理</a>
-                </li>
-                <?php }?>
-            </ul>
-
-
-
-
-        </div>
-        <!-- /.navbar-collapse -->
-    </nav>
 
     <div id="page-wrapper">
 
         <div class="container-fluid">
 
             <!-- Page Heading -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <h3 class="page-header">
-                        <?= Html::encode($this->title);?>
-                    </h3>
-                    <?=
-                        Breadcrumbs::widget([
-                            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-                        ]);
-                    ?>
+            <div class="panel">
+                <div class="panel-body breadcrumb-nav">
+                    <div class="pull-left">
+                         <?= Breadcrumbs::widget([
+                             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+                         ]);?>
+                    </div>
+                     <div class="pull-right">
+                        <div class="" id="dropdown-menu-click">
+                            <div class="" id="dropdown-menu-user">
+                                <img class="padding-right-10" src="./images/fa-user.png">
+                                <span class="padding-right-10"><?= Yii::$app->user->identity->username?></span>
+                                <span class="caret"></span>
+                            </div>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li>
+                                    <a id="user-logout" href="javascript:;" data-param="<?= Yii::$app->getRequest()->getCsrfToken()?>" data-url="<?= Url::toRoute(['/site/logout'])?>">
+                                        退出
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <!-- /.row -->
-
-
-            <?= $content?>
+            <?= $content ?>
 
         </div>
         <!-- /.container-fluid -->
@@ -146,9 +160,9 @@ AppAsset::register($this);
 <!-- /#wrapper -->
 
 
-
 <?php $this->endBody() ?>
 </body>
+
 </html>
 <?php $this->endPage() ?>
 

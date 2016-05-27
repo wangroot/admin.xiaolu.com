@@ -2,9 +2,11 @@
 
 namespace app\controllers;
 
+use app\models\AdminUserChannel;
 use Yii;
 use app\models\AdminUser;
 use app\models\AdminUserSearch;
+use yii\db\Expression;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\components\HodoController;
@@ -21,19 +23,30 @@ class AdminUserController extends HodoController
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['login', 'error'],
+                        'actions' => ['index'],
                         'allow' => true,
+                        'roles' => ['/admin-user/index'],
                     ],
                     [
-                        'actions' => ['index', 'view', 'create', 'update', 'switch-status', 'tabs'],
+                        'actions' => ['view'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['/admin-user/view'],
                     ],
                     [
-                        'actions' => ['delete'],
-                        'allow' => false,
-                        'roles' => ['@'],
-                    ]
+                        'actions' => ['create'],
+                        'allow' => true,
+                        'roles' => ['/admin-user/create'],
+                    ],
+                    [
+                        'actions' => ['update'],
+                        'allow' => true,
+                        'roles' => ['/admin-user/update'],
+                    ],
+                    [
+                        'actions' => ['switch-status'],
+                        'allow' => true,
+                        'roles' => ['/admin-user/switch-status'],
+                    ],
                 ],
             ],
             'verbs' => [
@@ -84,11 +97,30 @@ class AdminUserController extends HodoController
     public function actionCreate()
     {
         if (!in_array(Yii::$app->user->identity->username ,['liuyuefeng', 'chenlinsheng'], true)) {
-            throw new NotFoundHttpException('您没权限!....');
+            //throw new NotFoundHttpException('您没权限!....');
         }
         $model = new AdminUser();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            try{
+                /*分配渠道*/
+                foreach($model->channels as $value){
+                    $adminUserChannel = new AdminUserChannel();
+                    $adminUserChannel->admin_user_id = $model->id;
+                    $adminUserChannel->channel = $value;
+                    $adminUserChannel->status = 1;
+                    $adminUserChannel->create_time = time();
+                    $adminUserChannel->save();
+                }
+                /*分配权限*/
+                $manager = Yii::$app->getAuthManager();
+                $item = $manager->getRole($model->role);
+                $item = $item ? : $manager->getPermission($model->role);
+                $manager->assign($item, $model->id);
+            }catch(\Exception $exc){
+
+            }
+
             return $this->redirect(['index', 'AdminUser[id]' => $model->id]);
         } else {
             return $this->render('create', [
@@ -106,10 +138,20 @@ class AdminUserController extends HodoController
     public function actionUpdate($id)
     {
         if (!in_array(Yii::$app->user->identity->username ,['liuyuefeng', 'chenlinsheng'], true)) {
-            throw new NotFoundHttpException('您没权限!....');
+            //throw new NotFoundHttpException('您没权限!....');
         }
+        $sql =<<<SQL
+SELECT channel FROM admin_user_channel WHERE admin_user_id={$id}
+SQL;
+        $channel = Yii::$app->db->createCommand($sql)->queryColumn();
+        $channelKey = array_values($channel);
+        $channel = array_combine($channelKey, $channelKey);
         $model = $this->findModel($id);
+        $model->channels = $channel;
         $model->password_hash = '';
+        if($model->status == 11){
+            $model->provider = 1;
+        }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {

@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use app\extensions\grid\HodoGridView;
 use app\modules\adsplatform\models\Datadict;
+use yii\helpers\Url;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\AdminUserSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -24,15 +25,29 @@ $this->params['breadcrumbs'][] = ['label' => '后台账号列表', 'url' => ['in
             ['class' => 'yii\grid\SerialColumn'],
             'username',
             'email:email',
-             'status',
             [
-                'attribute' => 'status',
+                'format' => 'html',
+                'attribute'=>'status',
                 'value' => function($data){
-                    return Datadict::getDataValue('admin_user_status', $data->status);
+                    $style = ['style'=>'color:#738186'];
+                    if($data->status)
+                        $style = ['style'=>'color:#22bf6c'];
+                    return Html::tag('div', Datadict::getDataValue('admin_user_status', $data->status),$style);
                 }
             ],
 
-            ['class' => 'app\extensions\grid\HodoActionColumn'],
+            [
+                'class' => 'app\extensions\grid\HodoActionColumn',
+                'template' => '{assignment} {role} {view} {update} {switch-status} {delete}',
+                'buttons' => [
+                    'assignment' => function ($url, $model, $key) {
+                        return Html::a('分配角色',Url::to(['/admin/assignment/view', 'id' => $model->id]), ['class' => 'buttonOptions',]);
+                    },
+                    'role' => function () {
+                        return Html::a('角色列表',Url::to(['/admin/role/index']), ['class' => 'buttonOptions',]);
+                    },
+                ],
+            ],
         ],
     ]); ?>
    </div>

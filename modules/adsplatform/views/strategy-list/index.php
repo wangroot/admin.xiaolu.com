@@ -42,9 +42,13 @@ $this->params['breadcrumbs'][] = ['label'=>$this->title,'iconClass' => 'fa fa-ta
             // 'update_time:datetime',
             // 'status',
             [
+                'format' => 'html',
                 'attribute' => 'status',
                 'value' => function($data){
-                    return Datadict::getDataValue('strategy_list_status', $data->status);
+                    $style = ['style'=>'color:#738186'];
+                    if($data->status)
+                        $style = ['style'=>'color:#22bf6c'];
+                    return Html::tag('div',Datadict::getDataValue('strategy_list_status', $data->status),$style);
                 },
             ],
             [

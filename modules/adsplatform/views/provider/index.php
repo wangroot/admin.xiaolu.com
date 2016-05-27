@@ -22,18 +22,29 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= HodoGridView::widget([
             'dataProvider' => $dataProvider,
             'columns' => [
-                ['class' => 'yii\grid\SerialColumn'],
-
+                [
+                    'label' => 'ID',
+                    'attribute' => 'id',
+                ],
                 'name',
 //            'remark:ntext',
                 //'update_time',
                 [
+                    'format' => 'html',
                     'attribute' => 'status',
                     'value' => function($data){
-                        return Datadict::getDataValue('strategy_list_status', $data->status);
+                        
+                        $style = ['style'=>'color:#738186'];
+                        if($data->status)
+                            $style = ['style'=>'color:#22bf6c'];
+                        return Html::tag('div',Datadict::getDataValue('strategy_list_status', $data->status),$style);
                     },
                 ],
-                'create_time:date',
+                [
+                    'attribute' => 'create_time',
+                    'label' => '创建时间',
+                    'format' => ['date', 'php:Y-m-d H:i']
+                ],
 
                 [
                     'class' => 'app\extensions\grid\HodoActionColumn',

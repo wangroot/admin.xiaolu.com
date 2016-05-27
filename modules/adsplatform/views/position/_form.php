@@ -50,6 +50,7 @@ use yii\helpers\Url;
             <?= Html::a('取消', Url::toRoute('index') ,['class' => 'btn btn-default']) ?>
         </div>
     </div>
+
     <?php HodoActiveForm::end(); ?>
 
 </div>

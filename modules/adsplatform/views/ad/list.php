@@ -44,34 +44,41 @@ $this->params['breadcrumbs'][] = ['label' => '联盟广告管理列表', 'iconCl
                 [
                     'attribute' => 'provider',
                     'value' => function ($data) {
-                        return Datadict::getDataValue('ad_provider', $data->provider);
+                        return \app\modules\adsplatform\models\Provider::findOne($data->provider)->name;
                     },
                     'options' => [
                         'colgroup' => ['col' => 2]
                     ]
                 ],
                 [
-                    'attribute' => 'status',
-                    'value' => function ($data) {
-                        return Datadict::getDataValue('strategy_list_status', $data->status);
+                    'format' => 'html',
+                    'attribute'=>'status',
+                    'value' => function($data){
+                        $style = ['style'=>'color:#738186'];
+                        if($data->status)
+                            $style = ['style'=>'color:#22bf6c'];
+                        return Html::tag('div', Datadict::getDataValue('strategy_list_status', $data->status),$style);
                     }
                 ],
                 [
                     'attribute' => 'create_time',
                     'label' => '创建时间',
-                    'format' => ['date', 'php:Y-m-d']
+                    'format' => ['date', 'php:Y-m-d H:i']
                 ],
                 [
                     'class' => 'app\extensions\grid\HodoActionColumn',
-                    'template' => ' {update} {delete} {switch-status}',
+                    'template' => ' {update} {switch-status} {delete}',
                     'buttons' => [
                         'update' => function ($url, $model, $key) {
                             $options = array_merge([
                                 'title' => Yii::t('yii', 'Update'),
                                 'aria-label' => Yii::t('yii', 'Update'),
                                 'data-pjax' => '0',
-                            ], []);
-                            return Html::a('编辑', Url::toRoute(['ad-update', 'id' => $model->id]), $options);
+                            ], ['class' => 'buttonOptions']);
+                            if(Yii::$app->user->can('/adsplatform/ad/ad-update')){
+                                return Html::a('编辑', Url::toRoute(['ad-update', 'id' => $model->id]), $options);
+                            }
+                            return false;
                         },
                         'delete' => function ($url, $model, $key) {
                             $options = array_merge([
@@ -80,8 +87,30 @@ $this->params['breadcrumbs'][] = ['label' => '联盟广告管理列表', 'iconCl
                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
                                 'data-method' => 'post',
                                 'data-pjax' => '0',
+                                'style' => 'color:#ff5c41'
                             ], []);
-                            return Html::a('删除', Url::toRoute(['ad-delete', 'id' => $model->id]), $options);
+                            if(Yii::$app->user->can('/adsplatform/ad/ad-update')) {
+                                return Html::a('删除', Url::toRoute(['ad-delete', 'id' => $model->id]), $options);
+                            }
+                            return false;
+                        },
+                        'switch-status' => function ($url, $model, $key)  {
+                            $parameter = '';
+                            if (isset($model->status)) {
+                                $parameter .= '&status='.($model->status?0:1);
+                                $confirm = $model->status?'关闭':'开启';
+                            }
+                            $options = array_merge([
+                                'title' => '开启或关闭',
+                                'aria-label' => '更改状态',
+                                'data-confirm' => '您确定要'.$confirm,
+                                'data-method' => 'post',
+                                'data-pjax' => '0',
+                            ], []);
+                            if(Yii::$app->user->can('/adsplatform/ad/status')){
+                                return Html::a($confirm, Url::toRoute(['status', 'id' => $model->id]).$parameter, $options);
+                            }
+                            return false;
                         }
                     ]
                 ],

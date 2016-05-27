@@ -79,7 +79,6 @@ class AnalysisEffect extends \app\components\HodoActiveRecord
         $query->andFilterWhere([
             'id' => $this->id,
             'ad_id' => $this->ad_id,
-            'ad_name' => $this->ad_name,
             'total_click' => $this->total_click,
             'total_download' => $this->total_download,
             'total_failure' => $this->total_failure,

@@ -25,13 +25,29 @@ class ProviderController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['login', 'error'],
+                        'actions' => ['index'],
                         'allow' => true,
+                        'roles' => ['/adsplatform/provider/index'],
                     ],
                     [
-                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'switch-status'],
+                        'actions' => ['create'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['/adsplatform/provider/create'],
+                    ],
+                    [
+                        'actions' => ['update'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/provider/update'],
+                    ],
+                    [
+                        'actions' => ['switch-status'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/provider/switch-status'],
+                    ],
+                    [
+                        'actions' => ['delete'],
+                        'allow' => true,
+                        'roles' => ['/adsplatform/provider/delete'],
                     ],
                 ],
             ],

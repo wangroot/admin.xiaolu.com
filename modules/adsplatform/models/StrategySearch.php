@@ -50,7 +50,7 @@ class StrategySearch extends Strategy
             'query' => $query,
             'sort' => [
                 'defaultOrder' => [
-                    'weight' => SORT_DESC
+                    'create_time' => SORT_DESC
                 ]
             ],
         ]);

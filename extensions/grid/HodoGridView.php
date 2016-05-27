@@ -18,17 +18,20 @@ use yii\helpers\Html;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQueryInterface;
 use app\assets\BootstrapSwitchAsset;
-
+use Closure;
 class HodoGridView extends GridView
 {
+//table-responsive
+    public $options = ['class' => 'grid-view '];
+    public $summaryOptions = ['class' => 'summary display pull-left padding-8'];
 
-    public $options = ['class' => 'grid-view table-responsive'];
     const FOOTERTEXT = '底部统计';
     public $layout = "
-    {summary}\n
-    {pager}\n
-    {items}\n
-    {pager}
+    {items}
+    <div class='row'>
+        <div class='col-md-4'>{summary}
+        {pager}
+    </div>
     ";
     public $tableOptions = ['class' => 'table table-striped table-hover table-bordered table-condensed table-responsive'];
 
@@ -73,6 +76,37 @@ JS;
 
         $this->pager = ['class' => HodoLinkPager::className()];
     }
+
+    /**
+     * Renders a table row with the given data model and key.
+     * @param mixed $model the data model to be rendered
+     * @param mixed $key the key associated with the data model
+     * @param integer $index the zero-based index of the data model among the model array returned by [[dataProvider]].
+     * @return string the rendering result
+     */
+    public function renderTableRow($model, $key, $index)
+    {
+        $cells = [];
+        /* @var $column Column */
+        foreach ($this->columns as $column) {
+            $cells[] = $column->renderDataCell($model, $key, $index);
+        }
+        if ($this->rowOptions instanceof Closure) {
+
+            $options = call_user_func($this->rowOptions, $model, $key, $index, $this);
+        } else {
+            $options = $this->rowOptions;
+            if(isset($model->status)){
+                if($model->status == 1){
+                    $options = ['style' => ' background-color: #d8e3e5;'];
+                }
+            }
+        }
+        $options['data-key'] = is_array($key) ? json_encode($key) : (string) $key;
+
+        return Html::tag('tr', implode('', $cells), $options);
+    }
+
     /**
      * Runs the widget.
      */

@@ -2,6 +2,36 @@
  * Created by sheng on 16/5/5.
  */
 
+function initAjax() {
+    var $this = $(this);
+    var dataUrl = $this.attr('data-url');
+    var $positionId = $this.val();
+    $.ajax({
+        type: "GET",
+        url: dataUrl,
+        data: {positionId: $positionId},
+        dataType: 'json',
+        success: function (res) {
+            if (res.status != 'success') {
+                alert(res);
+            }
+            var $html = '<option value=""> </option>';
+            var $str = '';
+            var i = 0;
+            $.each(res.data, function (key, value) {
+                $html += '<option value="' + key + '">' + value + '</option>';
+                $str = value;
+                i++;
+            });
+            $('#addAdForm').find('.select2-clone').html($html);
+            $id = $('#addAdForm').find('.select2-clone').attr('id');
+            $('#' + $id).select2("val", "");
+        },
+        error: function () {
+            alert('出错了!找程序员来.');
+        }
+    });
+}
 /**
  * 导航js
  */
@@ -12,18 +42,27 @@ $(document).ready(function() {
         $('#addAdForm .addButton').css({ top: Math.round(h/2, 2)});
     }
 
+    initAjax.call($('#strategy-position_id'));
+    /**
+     * 广告类型
+     */
+    $('#strategy-position_id').change(function () {
+        initAjax.call(this);
+    });
+
+
     /**
      * 策略创建
      */
     $("#addAdForm").on('change','select.ad-provider-search',function(){
         var $this = $(this);
         var dataUrl = $this.attr('data-url');
-        var id = $this.val();
-
+        var $providerId = $this.val();
+        var $positionId =  $('#strategy-position_id').val();
         $.ajax({
             type: "GET",
             url: dataUrl,
-            data: { id:id },
+            data: { providerId:$providerId, positionId:$positionId },
             success: function(res){
                 if(res.status != 'success'){
                     alert(res);
@@ -37,10 +76,9 @@ $(document).ready(function() {
                     i++;
                 });
 
-                if(i === 1){
-                    $this.parent('.col-md-2').next().find('.select2-selection__rendered').html($str);
-                }
-                var s =$this.parent().next().find('.select2-clone').html($html);
+                $this.parent().next().find('.select2-clone').html($html);
+                $id = $this.parent().next().find('.select2-clone').attr('id');
+                $('#'+$id).select2("val", "");
             },
             error: function () {
                 alert('出错了!找程序员来.');
@@ -76,20 +114,10 @@ $(document).ready(function() {
         $(this).css({ top: Math.round(h/2, 2)});
     }).on('click', '.removeButton', function () {
         var dataUpdate = $(this).attr('data-update');
-        var dataUrl = $(this).attr('data-url');
+        var id = $(this).attr('data-id');
         if(dataUpdate == 'true'){
-            $.ajax({
-                type: "GET",
-                url: dataUrl,
-                data: {  },
-                success: function(res){
-                    console.log(res);
-                },
-                error: function () {
-                    alert('出错了!找程序员来.');
-                },
-                dataType: 'json'
-            });
+            var html = '<input type="text" class="hidden" name="StrategyAdList[delete]['+id+']" value="">';
+            $('#addAdForm').before(html);
         }
         var $row = $(this).parents('.panel-body');
         $row.remove();
@@ -107,25 +135,15 @@ $(document).ready(function() {
                 .removeAttr('id')
                 .attr('data-index', cloneIndex)
                 .insertBefore($template);
-        $clone.find('[type="text"]').attr('name', 'StrategyList[contents][2][]').end()
+        $clone.find('textarea').attr('name', 'StrategyList[contents][2][]').end()
             .find('select').attr('name', 'StrategyList[rule][2][]').end();
         initHintBlocksXiaolu();
     }).on('click', '.removeButton', function () {
         var dataUpdate = $(this).attr('data-update');
-        var dataUrl = $(this).attr('data-url');
+        var id = $(this).attr('data-id');
         if(dataUpdate == 'true'){
-            $.ajax({
-                type: "GET",
-                url: dataUrl,
-                data: {},
-                success: function (res) {
-                    console.log(id, s);
-                },
-                error: function () {
-                    //alert('出错了!找程序员来.');
-                },
-                dataType: 'json'
-            });
+            var html = '<input type="text" class="hidden" name="StrategyList[delete]['+id+']" value="">';
+            $('#cloneTemplateStrategyList').before(html);
         }
         var $row = $(this).parents('.row');
         $row.remove();
@@ -140,25 +158,15 @@ $(document).ready(function() {
                 .removeAttr('id')
                 .attr('data-index', cloneIndex)
                 .insertBefore($template);
-        $clone.find('[type="text"]').attr('name', 'StrategyList[contents][1][]').end()
+        $clone.find('textarea').attr('name', 'StrategyList[contents][1][]').end()
             .find('select').attr('name', 'StrategyList[rule][1][]').end();
         initHintBlocksXiaolu();
     }).on('click', '.removeButton', function () {
         var dataUpdate = $(this).attr('data-update');
-        var dataUrl = $(this).attr('data-url');
+        var id = $(this).attr('data-id');
         if(dataUpdate == 'true'){
-            $.ajax({
-                type: "GET",
-                url: dataUrl,
-                data: {},
-                success: function (res) {
-                    console.log(id, s);
-                },
-                error: function () {
-                    //alert('出错了!找程序员来.');
-                },
-                dataType: 'json'
-            });
+            var html = '<input type="text" class="hidden" name="StrategyList[delete]['+id+']" value="">';
+            $('#cloneTemplateStrategyList').before(html);
         }
         var $row = $(this).parents('.row');
         $row.remove();
@@ -173,25 +181,15 @@ $(document).ready(function() {
                 .removeAttr('id')
                 .attr('data-index', cloneIndex)
                 .insertBefore($template);
-        $clone.find('[type="text"]').attr('name', 'StrategyList[contents][position][]').end()
+        $clone.find('textarea').attr('name', 'StrategyList[contents][position][]').end()
             .find('select').attr('name', 'StrategyList[rule][position][]').end();
         initHintBlocksXiaolu();
     }).on('click', '.removeButton', function () {
         var dataUpdate = $(this).attr('data-update');
-        var dataUrl = $(this).attr('data-url');
+        var id = $(this).attr('data-id');
         if(dataUpdate == 'true'){
-            $.ajax({
-                type: "GET",
-                url: dataUrl,
-                data: {},
-                success: function (res) {
-                    console.log(id, s);
-                },
-                error: function () {
-                    //alert('出错了!找程序员来.');
-                },
-                dataType: 'json'
-            });
+            var html = '<input type="text" class="hidden" name="StrategyList[delete]['+id+']" value="">';
+            $('#cloneTemplateStrategyList').before(html);
         }
         var $row = $(this).parents('.row');
         $row.remove();
@@ -206,25 +204,15 @@ $(document).ready(function() {
                 .removeAttr('id')
                 .attr('data-index', cloneIndex)
                 .insertBefore($template);
-        $clone.find('[type="text"]').attr('name', 'StrategyList[contents][3][]').end()
+        $clone.find('textarea').attr('name', 'StrategyList[contents][3][]').end()
             .find('select').attr('name', 'StrategyList[rule][3][]').end();
         initHintBlocksXiaolu();
     }).on('click', '.removeButton', function () {
         var dataUpdate = $(this).attr('data-update');
-        var dataUrl = $(this).attr('data-url');
+        var id = $(this).attr('data-id');
         if(dataUpdate == 'true'){
-            $.ajax({
-                type: "GET",
-                url: dataUrl,
-                data: {},
-                success: function (res) {
-                    console.log(id, s);
-                },
-                error: function () {
-                    //alert('出错了!找程序员来.');
-                },
-                dataType: 'json'
-            });
+            var html = '<input type="text" class="hidden" name="StrategyList[delete]['+id+']" value="">';
+            $('#cloneTemplateStrategyList').before(html);
         }
         var $row = $(this).parents('.row');
         $row.remove();
@@ -253,25 +241,16 @@ $(document).ready(function() {
         var s2options_xiaolu = {"themeCss":".select2-container--krajee","sizeCss":"","doReset":true,"doToggle":true,"doOrder":false};
         if (jQuery('#'+$id).data('select2')) { jQuery('#'+$id).select2('destroy'); }
         jQuery.when(jQuery('#'+$id).select2(config)).done(initS2Loading($id,'s2options_xiaolu'));
-
+        $("#"+$id).select2("val", "");
         initHintBlocksXiaolu();
+        //$('#cloneTemplateStrategyList .select2-selection__choice').remove();
 
     }).on('click', '.removeButton', function () {
         var dataUpdate = $(this).attr('data-update');
-        var dataUrl = $(this).attr('data-url');
+        var id = $(this).attr('data-id');
         if(dataUpdate == 'true'){
-            $.ajax({
-                type: "GET",
-                url: dataUrl,
-                data: {},
-                success: function (res) {
-                    console.log(id, s);
-                },
-                error: function () {
-
-                },
-                dataType: 'json'
-            });
+            var html = '<input type="text" class="hidden" name="StrategyList[delete]['+id+']" value="">';
+            $('#cloneTemplateStrategyList').before(html);
         }
         var $row = $(this).parents('.row');
         $row.remove();

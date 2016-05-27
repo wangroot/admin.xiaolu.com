@@ -20,7 +20,8 @@ class LoginForm extends Model
     {
         return [
             'username' => '账号',
-            'password' => '密码'
+            'password' => '密码',
+            'rememberMe' => '记住密码',
         ];
     }
 
@@ -81,5 +82,10 @@ class LoginForm extends Model
         }
 
         return $this->_user;
+    }
+
+    public function HintFieldAttributeLabels()
+    {
+        
     }
 }

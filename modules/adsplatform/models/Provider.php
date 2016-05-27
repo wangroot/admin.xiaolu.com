@@ -50,6 +50,7 @@ class Provider extends HodoActiveRecord
     {
         return [
             [['remark'], 'string'],
+            [['status', 'name'], 'required'],
             [['create_time', 'update_time', 'status'], 'integer'],
             [['name'], 'string', 'max' => 50],
         ];

@@ -19,7 +19,8 @@
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
         "kartik-v/yii2-widget-fileinput": "*",
-        "kartik-v/yii2-widget-select2": "@dev"
+        "kartik-v/yii2-widget-select2": "@dev",
+        "league/csv": "7.0"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
@@ -37,6 +38,7 @@
         ]
     },
     "extra": {
+
         "yii\\composer\\Installer::postCreateProject": {
             "setPermission": [
                 {
@@ -50,8 +52,8 @@
             ]
         },
         "asset-installer-paths": {
-            "npm-asset-library": "../yiisoft/vendor/npm",
-            "bower-asset-library": "../yiisoft/vendor/bower"
+            "npm-asset-library": "./yiisoft/vendor/npm",
+            "bower-asset-library": "./yiisoft/vendor/bower"
         }
     }
 }
